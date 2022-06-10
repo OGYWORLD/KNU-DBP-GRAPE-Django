@@ -18,6 +18,8 @@ import ban from "../image/ban.jpg"
 import sale from "../image/sale.jpg"
 import bisue from "../image/sale_bisue.jpg"
 import nansae from "../image/sale_nansae.jpg"
+import Yujin from "../image/Yujin.jpg"
+import bunge from "../image/bunge.jpg"
 import glow from "../image/glow.gif"
 
 function Create(){
@@ -86,10 +88,10 @@ function Create(){
             <b style={{fontSize: "23px", marginTop: "222px", marginLeft: "327px", position:"absolute", color: "#C83D3D"}}><CaretUpOutlined /></b>
             <b style={{fontSize: "15px", marginTop: "228px", marginLeft: "353px", position:"absolute"}}>3</b>
 
-            <Tooltip title="디아길레프 (아트윈씨어터 1관)">
-            <img src={dia} style={{height: "180px", marginLeft: "380px", marginTop: "140px", position:"absolute"}}/>
+            <Tooltip title="번지점프를 하다 (홍익대 대학로 아트센터 대극장)">
+            <img src={bunge} style={{height: "180px", marginLeft: "380px", marginTop: "140px", position:"absolute"}}/>
             </Tooltip>
-            <p style={{fontSize:"13px", marginLeft: "395px", marginTop: "330px", position:"absolute"}}>[창작] 디아길레프</p>
+            <p style={{fontSize:"13px", marginLeft: "378px", marginTop: "330px", position:"absolute"}}>[창작] 번지점프를 하다</p>
 
 
             {/*주간 랭킹 3위*/}
@@ -97,10 +99,10 @@ function Create(){
             <b style={{fontSize: "23px", marginTop: "222px", marginLeft: "537px", position:"absolute", color: "#3D53C8"}}><CaretDownOutlined /></b>
             <b style={{fontSize: "15px", marginTop: "228px", marginLeft: "563px", position:"absolute"}}>1</b>
 
-            <Tooltip title="빈센트 반 고흐 (충무아트센터 중극장 블랙)">
-            <img src={van} style={{height: "180px", marginLeft: "590px", marginTop: "140px", position:"absolute"}}/>
+            <Tooltip title="유진과 유진 (대학로 자유극장)">
+            <img src={Yujin} style={{height: "180px", marginLeft: "590px", marginTop: "140px", position:"absolute"}}/>
             </Tooltip>
-            <p style={{fontSize:"13px", marginLeft: "592px", marginTop: "330px", position:"absolute"}}>[창작] 빈센트 반 고흐</p>
+            <p style={{fontSize:"13px", marginLeft: "600px", marginTop: "330px", position:"absolute"}}>[창작] 유진과 유진</p>
 
 
             {/*주간 랭킹 4위*/}

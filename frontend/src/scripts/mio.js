@@ -1,10 +1,10 @@
 import React, { useState, useEffect, Component } from 'react'
 import axios from "axios"
-import { Input, Card, Tabs, Menu, Descriptions, Checkbox, notification, Button, Modal, Tooltip} from 'antd'
+import { Input, Card, Tabs, Menu, Descriptions, Checkbox, notification, Button, Modal, Tooltip, message} from 'antd'
 import logo from "../image/logo.png"
 import "../css/homepage.css"
 import { Link } from 'react-router-dom';
-import {LayoutOutlined, FunnelPlotOutlined, GlobalOutlined, StarOutlined, CaretLeftOutlined, CaretRightOutlined, CheckCircleOutlined} from '@ant-design/icons'
+import {LayoutOutlined, FunnelPlotOutlined, GlobalOutlined, StarOutlined, CaretLeftOutlined, CaretRightOutlined, CheckCircleOutlined, PlusCircleOutlined} from '@ant-design/icons'
 import Bottom from "./bottom"
 import mio from "../image/ad.jpg"
 import mio_notice1 from "../image/mio_notice1.jpg"
@@ -20,13 +20,27 @@ import mio_cast from "../image/mio_cast.jpg"
 function Mio(){
 
     const [checkNum, setCheckNum] = useState(0);
+    const [least, setLeast] = useState(0);
+
+    const [a1, setA1] = useState(0);
+    const [a2, setA2] = useState(0);
+    const [a3, setA3] = useState(0);
+    const [a4, setA4] = useState(0);
+    const [count, setCount] = useState(0);
 
     const [id, setId] = useState("");
     const [pw, setPw] = useState("");
 
     const [users, setUsers] = useState(null);
+    const [seat, setSeat] = useState(null);
+    
+    const [loading2, setLoading2] = useState(false);
+    const [error2, setError2] = useState(null);
+
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
     const [nkey, setNkey] = useState("create");
     const [bottomKey, setBottomKey] = useState(1);
     const [dateCast, setDateCast] = useState(0);
@@ -46,53 +60,123 @@ function Mio(){
         setIsModalVisible(false);
       };
 
-          //GET
-          const fetchUsers = async () => {
+    //GET
+    const fetchUsers = async () => {
+    try {
+    setError(null);
+    setUsers(null);
+    setLoading(true);
+    
+    const response = await axios.get(
+        'http://127.0.0.1:8000/api/',
+        );
+    setUsers(response.data);
+    } catch (e) {
+    setError(e);
+    }
+    setLoading(false);
+    };
+    
+    
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+    
+
+        //GET
+        const fetchUsersMio = async () => {
             try {
-            setError(null);
-            setUsers(null);
-            setLoading(true);
-    
+            setError2(null);
+            setSeat(null);
+            setLoading2(true);
+            
             const response = await axios.get(
-                'http://127.0.0.1:8000/api/',
+                'http://127.0.0.1:8001/api/',
                 );
-            setUsers(response.data);
+            setSeat(response.data);
             } catch (e) {
-            setError(e);
+            setError2(e);
             }
-            setLoading(false);
+            setLoading2(false);
+            };
+            
+            
+            useEffect(() => {
+                fetchUsersMio();
+            }, []);
+            
+            
+            if (loading2) return <div>로딩중..</div>; 
+            if (error2) return <div>에러가 발생했습니다</div>;
+            
+            if (!seat) return null; 
+
+    // POST
+    const postUsers = async () => {
+
+    try {
+    setError(null);
+    setUsers(null);
+    setLoading(true);
+
+    axios.post('http://127.0.0.1:8000/api/',{
+        title: users[users.length-1].id,
+        name: users[users.length-1].name,
+        idid: users[users.length-1].idid,
+        pw: users[users.length-1].pw,
+        email: users[users.length-1].email,
+        addr: users[users.length-1].addr,
+        userLevel: 1,
+        musical: "미오 프라텔로",
+        date: "2022년 5월 29일 1회차 14:00 공연",
+        seat: seatNum,
+    }).then(function(response){
+        message.info('예매되었습니다.');
+    });
+    } catch (e) {
+    setError(e);
+    }
+    setLoading(false);
+    };
+
+    const postUsersSeat = async () => {
+
+        try {
+        setError(null);
+        setUsers(null);
+        setLoading(true);
+    
+        axios.post('http://127.0.0.1:8001/api/',{
+            a1: a1,
+            a2: a2,
+            a3: a3,
+            a4: a4,
+            count: count,
+            
+        }).then(function(response){
+            window.location.href = "http://localhost:3000/KNU-DBP-Grape/mypage";
+            message.info('예매되었습니다.');
+        });
+        } catch (e) {
+        setError(e);
+        }
+        setLoading(false);
         };
-    
-        useEffect(() => {
-            fetchUsers();
-        }, []);
-    
-        if (loading) return <div>로딩중..</div>; 
-        if (error) return <div>에러가 발생했습니다</div>;
-    
-        if (!users) return null; 
+
 
         // POST
-        const postUsers = async () => {
+        const postUsersLogout = async () => {
 
             try {
             setError(null);
             setUsers(null);
             setLoading(true);
-
+    
             axios.post('http://127.0.0.1:8000/api/',{
-                title: users[users.length-1].id,
-                name: users[users.length-1].name,
-                idid: users[users.length-1].idid,
-                pw: users[users.length-1].pw,
-                email: users[users.length-1].email,
-                addr: users[users.length-1].addr,
-                userLevel: 1,
-                musical: "미오 프라텔로",
-                date: "2022년 5월 29일 1회차 14:00 공연",
-                seat: seatNum,
+                title: -1,
+                userLevel: 0,
             }).then(function(response){
-                window.location.href = "http://localhost:3000/KNU-DBP-Grape/mio";
+                window.location.href = "http://localhost:3000/KNU-DBP-Grape";
             });
             } catch (e) {
             setError(e);
@@ -154,7 +238,75 @@ function Mio(){
     }
 
     function setSeatNumA1(){
-        setSeatNum("A1")
+        setSeatNum("A1");
+        setA1(1);
+        setA2(seat[seat.length-1].a2);
+        setA3(seat[seat.length-1].a3);
+        setA4(seat[seat.length-1].a4);
+        setCount(seat[seat.length-1].count-1);
+    }
+
+    function setSeatNumA2(){
+        setSeatNum("A2");
+        setA2(1);
+        setA1(seat[seat.length-1].a1);
+        setA3(seat[seat.length-1].a3);
+        setA4(seat[seat.length-1].a4);
+        setCount(seat[seat.length-1].count-1);
+
+    }
+
+    function setSeatNumA3(){
+        setSeatNum("A3");
+        setA3(1);
+        setA1(seat[seat.length-1].a1);
+        setA2(seat[seat.length-1].a2);
+        setA4(seat[seat.length-1].a4);
+        setCount(seat[seat.length-1].count-1);
+
+    }
+
+    function setSeatNumA4(){
+        setSeatNum("A4");
+        setA4(1);
+        setA1(seat[seat.length-1].a1);
+        setA2(seat[seat.length-1].a2);
+        setA3(seat[seat.length-1].a3);
+        setCount(seat[seat.length-1].count-1);
+
+    }
+
+    function setSeatNumA5(){
+        setSeatNum("A5")
+    }
+
+    function setSeatNumA6(){
+        setSeatNum("A6")
+    }
+
+    function setSeatNumA7(){
+        setSeatNum("A7")
+    }
+
+    function setSeatNumA8(){
+        setSeatNum("A8")
+    }
+
+    function setSeatNumA9(){
+        setSeatNum("A9")
+    }
+
+    var i = 0;
+    function leastSeat() {
+        for(i = 0; i < 4; i++){
+            console.log("sdfsd");
+            if(seat[seat.length-1].a`i` == 0){
+                console.log("sdfsd");
+                setLeast(least+1);
+            }
+        }
+
+
     }
 
     return(
@@ -163,6 +315,7 @@ function Mio(){
             (openNotification('top'))}
 
             <div className = "body">
+            {leastSeat}
             <Link to="/KNU-DBP-Grape"><img src = {logo} style = {{width: "187.5px", height: "75px", marginTop: "25px", position:"absolute", }}/></Link>
                 <Input className="input" style = {{width: "700px", height: "20px", marginTop: "55px", marginLeft: "210px", position:"absolute", fontSize: "20px", borderColor: "#5A4968"
             , borderWidth: "0 0 2px", outline: "0"}}/>
@@ -181,7 +334,7 @@ function Mio(){
                 <b style={{fontSize: "15px", marginLeft: "950px", marginTop: "30px", position:"absolute", color: "#8B64BE"}}><CheckCircleOutlined /> 안녕하세요 {users[users.length-1].name}님!</b>
                 <Link to="/KNU-DBP-Grape/mypage"><b style={{fontSize: "15px", marginLeft: "950px", marginTop: "55px", position:"absolute", color: "black"}}> 마이페이지 </b></Link>
                 <b style={{fontSize: "15px", marginLeft: "1035px", marginTop: "54px", position:"absolute",}}>|</b>
-                <Link to="/KNU-DBP-Grape"><b style={{fontSize: "15px", marginLeft: "1050px", marginTop: "55px", position:"absolute", color: "black"}} onClick={ () => {postUsers()} }> 로그아웃 </b></Link>
+                <Link to="/KNU-DBP-Grape"><b style={{fontSize: "15px", marginLeft: "1050px", marginTop: "55px", position:"absolute", color: "black"}} onClick={ () => {postUsersLogout()} }> 로그아웃 </b></Link>
                 </>)
             }
                 <br/><br/><br/><br/><br/>
@@ -293,7 +446,7 @@ function Mio(){
                         <b style={{fontSize: "17px", marginLeft: "5px"}}>회차</b>
                         <Tabs defaultActiveKey="1" type="card" style={{marginLeft: "5px", marginTop: "10px"}}>
                             <TabPane tab="1회 14:00" key="1" style={{marginLeft: "0px", marginTop: "10px"}}>
-                            <li style={{marginLeft: "10px"}}>R석: 10 / S석: 5</li>
+                            <li style={{marginLeft: "10px"}}>R석: {seat[seat.length-1].count}</li>
                             <hr style={{marginTop: "20px"}}/>
                             <b style={{fontSize: "17px", marginLeft: "5px"}}>캐스트</b>
                             <p style={{fontSize: "15px", marginLeft: "5px", marginTop: "10px"}}>박규원, 성연, 정성일</p>
@@ -307,17 +460,54 @@ function Mio(){
                             }
                             </TabPane>
                             <TabPane tab="2회 18:00" key="2" style={{marginLeft: "0px", marginTop: "10px"}}>
-                            <li style={{marginLeft: "10px"}}>R석: 10 / S석: 5</li>
+                            <li style={{marginLeft: "10px", }}>R석: 매진</li>
                             <hr style={{marginTop: "20px"}}/>
                             <b style={{fontSize: "17px", marginLeft: "5px"}}>캐스트</b>
                             <p style={{fontSize: "15px", marginLeft: "5px", marginTop: "10px"}}>최석진, 유현석, 정성일</p>
                             {
                                 (users[users.length-1].userLevel == 1) &&
-                                (<Button style={{width: "340px", height: "80px", fontSize:"18px", color: "white", background: "#5B3291", borderRadius: "16px"}} onClick={showModal}><b>예매하기</b></Button>)
+                                (<Button style={{width: "340px", height: "80px", fontSize:"18px", color: "white", background: "#5B3291", borderRadius: "16px"}}><b>예매하기</b></Button>)
                             }
                             {
                                 (users[users.length-1].userLevel == 0) &&
                                 (<Button style={{width: "340px", height: "80px", fontSize:"18px", borderRadius: "16px"}} onClick={showModal} disabled><b>로그인 후 이용해주세요</b></Button>)
+                            }
+                            </TabPane>
+                        </Tabs>
+
+                        </>) 
+                    }
+
+                    {   (dateCast == 31) &&
+                        (<>
+                        <b style={{fontSize: "17px", marginLeft: "5px"}}>회차</b>
+                        <Tabs defaultActiveKey="1" type="card" style={{marginLeft: "5px", marginTop: "10px"}}>
+                            <TabPane tab="1회 14:00" key="1" style={{marginLeft: "0px", marginTop: "10px"}}>
+                            <li style={{marginLeft: "10px"}}>R석: 13</li>
+                            <hr style={{marginTop: "20px"}}/>
+                            <b style={{fontSize: "17px", marginLeft: "5px"}}>캐스트</b>
+                            <p style={{fontSize: "15px", marginLeft: "5px", marginTop: "10px"}}>이승현, 최호승, 김이담</p>
+                            {
+                                (users[users.length-1].userLevel == 1) &&
+                                (<Button style={{width: "340px", height: "80px", fontSize:"18px", color: "white", background: "#5B3291", borderRadius: "16px"}}><b>예매하기</b></Button>)
+                            }
+                            {
+                                (users[users.length-1].userLevel == 0) &&
+                                (<Button style={{width: "340px", height: "80px", fontSize:"18px", borderRadius: "16px"}} disabled><b>로그인 후 이용해주세요</b></Button>)
+                            }
+                            </TabPane>
+                            <TabPane tab="2회 18:00" key="2" style={{marginLeft: "0px", marginTop: "10px"}}>
+                            <li style={{marginLeft: "10px", }}>R석: 21</li>
+                            <hr style={{marginTop: "20px"}}/>
+                            <b style={{fontSize: "17px", marginLeft: "5px"}}>캐스트</b>
+                            <p style={{fontSize: "15px", marginLeft: "5px", marginTop: "10px"}}>김대현, 유현석, 김지온</p>
+                            {
+                                (users[users.length-1].userLevel == 1) &&
+                                (<Button style={{width: "340px", height: "80px", fontSize:"18px", color: "white", background: "#5B3291", borderRadius: "16px"}}><b>예매하기</b></Button>)
+                            }
+                            {
+                                (users[users.length-1].userLevel == 0) &&
+                                (<Button style={{width: "340px", height: "80px", fontSize:"18px", borderRadius: "16px"}} disabled><b>로그인 후 이용해주세요</b></Button>)
                             }
                             </TabPane>
                         </Tabs>
@@ -410,7 +600,7 @@ function Mio(){
                     </TabPane>
                 </Tabs>
 
-                <Modal title="예매페이지" visible={isModalVisible} onOk={ () => {postUsers()} } onCancel={handleCancel} bodyStyle={{height: 1000}} width={1000} okText="예매하기" cancelText="취소">
+                <Modal title="예매페이지" visible={isModalVisible} onOk={ () => {postUsers(); postUsersSeat()} } onCancel={handleCancel} bodyStyle={{height: 1000}} width={1000} okText="예매하기" cancelText="취소">
                     <b style={{fontSize: "20px"}}>미오 프라텔로 2022년 5월 29일 1회차 14:00 공연</b>
 
                     <Tooltip placement="bottom" title={<b>
@@ -422,21 +612,340 @@ function Mio(){
                         <Button style={{marginLeft: "20px"}}>좌석 정보</Button>
                     </Tooltip>
 
-                    <Card style={{ width: 950, marginTop: "50px", height: "800px", backgroundColor: '#76707D'}}>
+                    <Card style={{ width: 950, marginTop: "50px", height: "700px", backgroundColor: '#76707D'}}>
                         <b style= {{fontSize: "50px", color: "white", marginLeft: "370px", marginBottom: "20px"}}>STAGE</b>
                         <hr/>
                         
                         <div style={{marginTop: "20px", position:"absolute", marginLeft: "0px"}}>
-                        <b style={{fontSize: "20px", color: "white", marginRight: "10px"}}>A열</b>
-                        <Button style={{width: "40px", height: "40px", backgroundColor: "#5B3291"}} onClick={setSeatNumA1}> </Button>
-                        <Button style={{width: "40px", height: "40px", marginLeft: "10px", backgroundColor: "#32913B"}}> </Button>
-                        <Button style={{width: "40px", height: "40px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "10px"}}>A</b>
+                        {
+                            (seat[seat.length-1].a1 == 0) &&
+                            (<Button style={{width: "5px", backgroundColor: "#5B3291"}} onClick={setSeatNumA1}> </Button>)
+                        }
+                        {
+                            (seat[seat.length-1].a1 == 1) &&
+                            (<Button style={{width: "5px", backgroundColor: "white"}} onClick={setSeatNumA1} disabled> </Button>)
+                        }
+
+                        {
+                            (seat[seat.length-1].a2 == 0) &&
+                            (<Button style={{width: "5px", marginLeft: "10px", backgroundColor: "#5B3291"}} onClick={setSeatNumA2}> </Button>)
+                        }
+                        {
+                            (seat[seat.length-1].a2 == 1) &&
+                            (<Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} onClick={setSeatNumA2} disabled> </Button>)
+                        }
+
+                        {
+                            (seat[seat.length-1].a3 == 0) &&
+                            (<Button style={{width: "5px", marginLeft: "10px", backgroundColor: "#5B3291"}} onClick={setSeatNumA3}> </Button>)
+                        }
+                        {
+                            (seat[seat.length-1].a3 == 1) &&
+                            (<Button style={{width: "5px", marginLeft: "10px", backgroundColor:"white"}} onClick={setSeatNumA3} disabled> </Button>)
+                        }
+
+                        {
+                            (seat[seat.length-1].a4 == 0) &&
+                            (<Button style={{width: "5px", marginLeft: "10px", backgroundColor: "#5B3291"}} onClick={setSeatNumA4}> </Button>)
+                        }
+                        {
+                            (seat[seat.length-1].a4 == 1) &&
+                            (<Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} onClick={setSeatNumA4} disabled> </Button>)
+                        }
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "2px"}}>B</b>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "2px"}}>C</b>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "0px"}}>D</b>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "4px"}}>E</b>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "4px"}}>F</b>
+
+                        <Button style={{width: "5px", marginLeft: "218px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "0px"}}>G</b>
+
+                        <Button style={{width: "5px", marginLeft: "137px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "0px"}}>H</b>
+
+                        <Button style={{width: "5px", marginLeft: "137px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "8px"}}>I</b>
+
+                        <Button style={{width: "5px", marginLeft: "137px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "6px"}}>J</b>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "2px"}}>K</b>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
+                        <div style={{marginTop: "10px"}}>
+                        <b style={{fontSize: "20px", color: "white", marginRight: "5px"}}>L</b>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+
+                        <Button style={{width: "5px", marginLeft: "50px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        <Button style={{width: "5px", marginLeft: "10px", backgroundColor: "white"}} disabled> </Button>
+                        </div>
+
                         </div>
                     </Card>
+                    <hr/>
+                    <Card style={{ width: 950, marginTop: "0px", height: "170px", backgroundColor: '#383240'}}>
+                    <b style={{fontSize: "20px", color: "#E6D0FF", zIndex: "2"}}><PlusCircleOutlined /> 선택된 좌석</b>
+                    <br/><br/>
                     {
                         (seatNum == "A1") && 
-                        (<b style={{fontSize: "20px", marginLeft: "10px"}}>A열 1번 좌석</b>)
+                        (<b style={{fontSize: "20px", marginLeft: "10px",  color: "white"}}>A열 1번 좌석</b>)
                     }
+
+                    {
+                        (seatNum == "A2") && 
+                        (<b style={{fontSize: "20px", marginLeft: "10px",  color: "white"}}>A열 2번 좌석</b>)
+                    }
+
+                    {
+                        (seatNum == "A3") && 
+                        (<b style={{fontSize: "20px", marginLeft: "10px",  color: "white"}}>A열 3번 좌석</b>)
+                    }
+
+                    {
+                        (seatNum == "A4") && 
+                        (<b style={{fontSize: "20px", marginLeft: "10px",  color: "white"}}>A열 4번 좌석</b>)
+                    }
+                    </Card>
                 </Modal>
                             
             </div>

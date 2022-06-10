@@ -96,7 +96,6 @@ function Login(){
 
         for(i = 0; i < users.length; i++){
             if(users[i].idid == id && users[i].pw == pw){
-                setLogin(1);
                 axios.post('http://127.0.0.1:8000/api/',{
                     title: users[i].idid,
                     name:  users[i].name,
@@ -111,6 +110,7 @@ function Login(){
         }).then(function(response){
             window.location.href = "http://localhost:3000/KNU-DBP-Grape";
         });
+        setLogin(1);
             }
 
             if(i == users.length-1){

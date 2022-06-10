@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(4@&&pv=)f@53zy37y+ikh^s#!phn5nwng4#yc@hxwmx-r$j@+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'http://OGYWORLD.github.io', 'http://localhost:3000']
 
 
 # Application definition
@@ -135,4 +135,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ORIGIN_WHITELIST = (
+    
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    
+)
 

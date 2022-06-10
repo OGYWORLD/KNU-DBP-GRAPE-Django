@@ -1,0 +1,46 @@
+from django.db import models
+
+class Post(models.Model):
+    a1 = models.FloatField(null=True, default=0)
+    a2 = models.FloatField(null=True, default=0)
+    a3 = models.FloatField(null=True, default=0)
+    a4 = models.FloatField(null=True, default=0)
+    a5 = models.FloatField(null=True, default=0)
+    a6 = models.FloatField(null=True, default=0)
+    a7 = models.FloatField(null=True, default=0)
+    a8 = models.FloatField(null=True, default=0)
+    a9 = models.FloatField(null=True, default=0)
+    a10 = models.FloatField(null=True, default=0)
+    a11 = models.FloatField(null=True, default=0)
+    a12 = models.FloatField(null=True, default=0)
+    a13 = models.FloatField(null=True, default=0)
+    a14 = models.FloatField(null=True, default=0)
+    a15 = models.FloatField(null=True, default=0)
+    a16 = models.FloatField(null=True, default=0)
+    a17 = models.FloatField(null=True, default=0)
+    a18 = models.FloatField(null=True, default=0)
+
+    b1 = models.FloatField(null=True, default=0)
+    b2 = models.FloatField(null=True, default=0)
+    b3 = models.FloatField(null=True, default=0)
+    b4 = models.FloatField(null=True, default=0)
+    b5 = models.FloatField(null=True, default=0)
+    b6 = models.FloatField(null=True, default=0)
+    b7 = models.FloatField(null=True, default=0)
+    b8 = models.FloatField(null=True, default=0)
+    b9 = models.FloatField(null=True, default=0)
+    b10 = models.FloatField(null=True, default=0)
+    b11 = models.FloatField(null=True, default=0)
+    b12 = models.FloatField(null=True, default=0)
+    b13 = models.FloatField(null=True, default=0)
+    b14 = models.FloatField(null=True, default=0)
+    b15 = models.FloatField(null=True, default=0)
+    b16 = models.FloatField(null=True, default=0)
+    b17 = models.FloatField(null=True, default=0)
+    b18 = models.FloatField(null=True, default=0)
+
+    count = models.FloatField(null=True, default=4)
+
+    def __str__(self):
+        """A string representation of the model."""
+        return str(self.a1)

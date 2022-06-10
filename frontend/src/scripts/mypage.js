@@ -1,19 +1,23 @@
 import React, { useState, useEffect, Component } from 'react'
 import axios from "axios"
-import { Input, Card, Tabs, Menu, Descriptions, Checkbox, notification, Button} from 'antd'
+import { Input, Card, Tabs, Menu, Button, message} from 'antd'
 import logo from "../image/logo.png"
 import "../css/homepage.css"
 import { Link } from 'react-router-dom';
-import {LayoutOutlined, FunnelPlotOutlined, GlobalOutlined, StarOutlined, CaretLeftOutlined, CaretRightOutlined, CheckCircleOutlined} from '@ant-design/icons'
+import {LayoutOutlined, FunnelPlotOutlined, GlobalOutlined, StarOutlined, CaretLeftOutlined, CaretRightOutlined, CheckCircleOutlined, ContactsOutlined, GiftOutlined} from '@ant-design/icons'
 import Bottom from "./bottom"
 import grape from "../image/only_grape.png"
 
 function Mio(){
 
     const [users, setUsers] = useState(null);
+    const [users2, setUsers2] = useState(null);
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [nkey, setNkey] = useState("create");
+
+    const [seat, setSeat] = useState("");
 
     function handleChange(key) {
         setNkey(key.key);
@@ -41,6 +45,26 @@ function Mio(){
         useEffect(() => {
             fetchUsers();
         }, []);
+
+        const fetchUsersMio = async () => {
+            try {
+            setError(null);
+            setUsers(null);
+            setLoading(true);
+    
+            const response = await axios.get(
+                'http://127.0.0.1:8001/api/',
+                );
+            setUsers2(response.data);
+            } catch (e) {
+            setError(e);
+            }
+            setLoading(false);
+        };
+    
+        useEffect(() => {
+            fetchUsersMio();
+        }, []);
     
         if (loading) return <div>로딩중..</div>; 
         if (error) return <div>에러가 발생했습니다</div>;
@@ -59,13 +83,41 @@ function Mio(){
                 title: -1,
                 userLevel: 0,
             }).then(function(response){
-                window.location.href = "http://localhost:3000/KNU-DBP-Grape";
+                window.location.href = "http://localhost:3000/KNU-DBP-Grape/mypage";
             });
             } catch (e) {
             setError(e);
             }
             setLoading(false);
         };
+
+        const postUsersCancle = async () => {
+
+            try {
+            setError(null);
+            setUsers(null);
+            setLoading(true);
+
+            axios.post('http://127.0.0.1:8000/api/',{
+                title: users[users.length-1].idid,
+                name:  users[users.length-1].name,
+                idid:  users[users.length-1].idid,
+                pw:  users[users.length-1].pw,
+                email:  users[users.length-1].email,
+                addr:  users[users.length-1].addr,
+                musical: 0,
+                date: 0,
+                seat: 0,
+                userLevel: 1,
+            }).then(function(response){
+                message.info('취소되었습니다.');
+            });
+            } catch (e) {
+            setError(e);
+            }
+            setLoading(false);
+        };
+
 
     return(
         <div>
@@ -117,7 +169,7 @@ function Mio(){
                 <b style={{fontSize: "23px", marginLeft: "50px", marginTop: "10px", position:"absolute",}}>{users[users.length-1].name}님의 마이페이지</b>
                 <b></b>
                 <div style = {{backgroundColor: '#A69BAE', width: '1140px', height: '7px', marginTop: "70px", position:"absolute"}}></div>
-                <Card title="개인 정보" style = {{marginTop: "100px", position:"absolute", width: '1140px'}}>
+                <Card title={<b><ContactsOutlined /> 개인정보</b>} style = {{marginTop: "100px", position:"absolute", width: '1140px'}}>
                         <Card.Grid><b style={{marginRight: "20px"}}>이름</b> {users[users.length-1].name}</Card.Grid>
                         <Card.Grid><b style={{marginRight: "20px"}}>아이디</b> {users[users.length-1].idid}</Card.Grid>
                         <Card.Grid><b style={{marginRight: "20px"}}>이메일</b> {users[users.length-1].email}</Card.Grid>
@@ -126,13 +178,25 @@ function Mio(){
                         <Card.Grid><b style={{marginRight: "20px"}}>가입</b> 포도알 실버회원</Card.Grid>
                 </Card>
 
-                <Card title="공연 예매 내역" style={{ width: "1140px", marginTop: "350px" }}>
-                    <p>{users[users.length-1].musical} {users[users.length-1].date} {users[users.length-1].seat}</p>
+                <Card title={<b><GiftOutlined /> 나의 공연 예매 내역</b>} style={{ width: "1140px", marginTop: "350px" }}>
+                    {
+                        (users[users.length-1].musical == 0) &&
+                        (<p>예매내역이 없습니다.</p>)
+                    }
+
+                    {
+                        (users[users.length-1].musical != 0) &&
+                        (
+                        <>
+                            <p style={{fontSize: "15px"}}>{users[users.length-1].musical} {users[users.length-1].date} {users[users.length-1].seat} </p>
+                        </>
+                        )
+                    }
                 </Card>
                 
             </div>
 
-            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
             <Bottom/>
         </div>
     );
