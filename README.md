@@ -9,9 +9,7 @@ DB: Maria DB
 
 
 ## backend
-Spring boot
-
-Djnago (하단 url 버전)
+Djnago rest API
 
 ## frontend
 react
