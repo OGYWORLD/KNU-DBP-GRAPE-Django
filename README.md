@@ -10,4 +10,4 @@ Djnago rest API
 react
 
 ## url (DB host 배포를 안 해서 UI확인만 가능합니다.)
-https://ogyworld.github.io/KNU-DBP-Grape/
+https://ogyworld.github.io/Grape/
